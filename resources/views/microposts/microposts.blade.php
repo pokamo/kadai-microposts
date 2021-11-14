@@ -4,7 +4,7 @@
             <li class="media mb-3">
                 {{-- 投稿の所有者のメールアドレスをもとにGravatarを取得して表示 --}}
                 <img class="mr-2 rounded" src="{{ Gravatar::get($micropost->user->email, ['size' => 50]) }}" alt="">
-                <div class="media-body">
+                <div class="media-body container">
                     <div>
                         {{-- 投稿の所有者のユーザ詳細ページへのリンク --}}
                         {!! link_to_route('users.show', $micropost->user->name, ['user' => $micropost->user->id]) !!}
@@ -14,11 +14,22 @@
                         {{-- 投稿内容 --}}
                         <p class="mb-0">{!! nl2br(e($micropost->content)) !!}</p>
                     </div>
-                    <div>
+                    <div class=row>
+
+                    @if (Auth::user()->is_favoriting($micropost->id))
+                        {!! Form::open(['route' => ['favorites.unfavorite', $micropost->id], 'method' => 'delete']) !!}
+                            {!! Form::submit('UnFavorite', ['class' => 'btn btn-warning btn-sm col-xs-6']) !!}
+                        {!! Form::close() !!}
+                    @else
+                        {{-- 投稿お気に入りボタンのフォーム --}}
+                        {!! Form::open(['route' => ['favorites.favorite', $micropost->id], 'method' => 'post']) !!}
+                            {!! Form::submit('Favorite', ['class' => 'btn btn-success btn-sm col-xs-6']) !!}
+                        {!! Form::close() !!}
+                    @endif
                         @if (Auth::id() == $micropost->user_id)
                             {{-- 投稿削除ボタンのフォーム --}}
                             {!! Form::open(['route' => ['microposts.destroy', $micropost->id], 'method' => 'delete']) !!}
-                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
+                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm  offset-md-2 col-xs-6']) !!}
                             {!! Form::close() !!}
                         @endif
                     </div>
